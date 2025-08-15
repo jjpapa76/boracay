@@ -15,8 +15,7 @@ app.use('/api/*', cors({
   credentials: true
 }))
 
-// 정적 파일 서빙
-app.use('/static/*', serveStatic({ root: './public' }))
+// 로컬 개발 환경에서는 정적 파일 서빙을 wrangler에 위임
 
 // 메인 페이지
 app.get('/', async (c) => {
@@ -133,6 +132,280 @@ app.get('/', async (c) => {
             </div>
         </section>
         
+        <!-- 소개 섹션 -->
+        <section id="about" class="section-padding bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="section-title korean-font">
+                        <span class="gold-gradient">보라카이</span> 실버타운 소개
+                    </h2>
+                    <p class="section-subtitle korean-font">
+                        한국의 전통미와 현대적 럭셔리가 만나는 특별한 공간에서 
+                        품격있는 시니어 라이프를 경험하세요.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="animate-fade-in">
+                        <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/514969fc-f37b-45a8-89a8-92790460a622" 
+                             alt="한국 전통 로비" class="rounded-2xl shadow-2xl">
+                    </div>
+                    <div class="space-y-6">
+                        <h3 class="text-3xl font-bold korean-font">한국의 아이덴티티가 살아있는 공간</h3>
+                        <p class="text-lg text-gray-700 korean-font leading-relaxed">
+                            보라카이 실버타운은 Monaco Road에 위치한 프리미엄 시니어 리빙 커뮤니티입니다. 
+                            한국의 전통 궁궐 건축양식을 현대적으로 재해석하여 글로벌한 감각을 더했습니다.
+                        </p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <h4 class="text-2xl font-bold gold-gradient">4층</h4>
+                                <p class="korean-font text-sm">웅장한 집합건물</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <h4 class="text-2xl font-bold gold-gradient">럭셔리</h4>
+                                <p class="korean-font text-sm">하이엔드 인테리어</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 유닛타입 섹션 -->
+        <section id="units" class="section-padding bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="section-title korean-font">회원권 유닛 타입</h2>
+                    <p class="section-subtitle korean-font">
+                        다양한 평수와 구성으로 준비된 4가지 프리미엄 유닛을 만나보세요.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Studio Premium -->
+                    <div class="membership-card card-hover">
+                        <div class="p-6">
+                            <div class="text-center mb-4">
+                                <h3 class="text-xl font-bold korean-font mb-2">스튜디오 프리미엄</h3>
+                                <p class="text-gray-600 text-sm">Studio Premium</p>
+                            </div>
+                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/30ef4aef-c900-46d4-83f0-237b9e5fb96f" 
+                                 alt="스튜디오 프리미엄" class="w-full h-48 object-cover rounded-lg mb-4">
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="korean-font font-medium">면적</span>
+                                    <span class="korean-font">45㎡ (13.6평)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="korean-font font-medium">가격</span>
+                                    <span class="korean-font text-yellow-600 font-bold">1.5억원</span>
+                                </div>
+                                <p class="text-sm text-gray-600 korean-font">
+                                    오션뷰 컴팩트 럭셔리 스튜디오, 스마트홈 시스템
+                                </p>
+                                <button onclick="applyPrePurchase(1)" class="w-full btn-primary korean-font">
+                                    사전구매 신청
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- One Bedroom Deluxe -->
+                    <div class="membership-card card-hover">
+                        <div class="p-6">
+                            <div class="text-center mb-4">
+                                <h3 class="text-xl font-bold korean-font mb-2">원룸 디럭스</h3>
+                                <p class="text-gray-600 text-sm">One Bedroom Deluxe</p>
+                            </div>
+                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/30ef4aef-c900-46d4-83f0-237b9e5fb96f" 
+                                 alt="원룸 디럭스" class="w-full h-48 object-cover rounded-lg mb-4">
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="korean-font font-medium">면적</span>
+                                    <span class="korean-font">65㎡ (19.7평)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="korean-font font-medium">가격</span>
+                                    <span class="korean-font text-yellow-600 font-bold">2.2억원</span>
+                                </div>
+                                <p class="text-sm text-gray-600 korean-font">
+                                    별도 침실, 프리미엄 어메니티, 스터디룸
+                                </p>
+                                <button onclick="applyPrePurchase(2)" class="w-full btn-primary korean-font">
+                                    사전구매 신청
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Two Bedroom Royal -->
+                    <div class="membership-card card-hover featured">
+                        <div class="p-6">
+                            <div class="text-center mb-4">
+                                <h3 class="text-xl font-bold korean-font mb-2">투룸 로열</h3>
+                                <p class="text-gray-600 text-sm">Two Bedroom Royal</p>
+                            </div>
+                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/1dbd0308-6f67-4b16-96cc-c7430a7a7ec1" 
+                                 alt="투룸 로열" class="w-full h-48 object-cover rounded-lg mb-4">
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="korean-font font-medium">면적</span>
+                                    <span class="korean-font">85㎡ (25.7평)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="korean-font font-medium">가격</span>
+                                    <span class="korean-font text-yellow-600 font-bold">3.2억원</span>
+                                </div>
+                                <p class="text-sm text-gray-600 korean-font">
+                                    파노라믹 오션뷰, 로열 스위트, 프라이빗 엘리베이터
+                                </p>
+                                <button onclick="applyPrePurchase(3)" class="w-full btn-primary korean-font">
+                                    사전구매 신청
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Penthouse Presidential -->
+                    <div class="membership-card card-hover">
+                        <div class="p-6">
+                            <div class="text-center mb-4">
+                                <h3 class="text-xl font-bold korean-font mb-2">펜트하우스 프레지덴셜</h3>
+                                <p class="text-gray-600 text-sm">Penthouse Presidential</p>
+                            </div>
+                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/c6658e1d-2443-4062-86da-235b4f80cca9" 
+                                 alt="펜트하우스 프레지덴셜" class="w-full h-48 object-cover rounded-lg mb-4">
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="korean-font font-medium">면적</span>
+                                    <span class="korean-font">120㎡ (36.3평)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="korean-font font-medium">가격</span>
+                                    <span class="korean-font text-yellow-600 font-bold">5억원</span>
+                                </div>
+                                <p class="text-sm text-gray-600 korean-font">
+                                    360도 오션뷰, 프라이빗 테라스, 헬기장 직접 접근
+                                </p>
+                                <button onclick="applyPrePurchase(4)" class="w-full btn-primary korean-font">
+                                    사전구매 신청
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 편의시설 섹션 -->
+        <section id="facilities" class="section-padding bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="section-title korean-font">프리미엄 편의시설</h2>
+                    <p class="section-subtitle korean-font">
+                        시니어 라이프를 풍요롭게 만들어 줄 다양한 편의시설을 제공합니다.
+                    </p>
+                </div>
+                <div class="mb-12">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/2e27d37d-447e-4c28-ac84-c5cfd30f104a" 
+                         alt="편의시설" class="w-full rounded-2xl shadow-2xl">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="facility-card text-center p-6">
+                        <div class="facility-icon">
+                            <i class="fas fa-swimming-pool"></i>
+                        </div>
+                        <h3 class="text-lg font-bold korean-font mb-2">인피니티 풀</h3>
+                        <p class="text-sm text-gray-600 korean-font">바다를 내려다보는 럭셔리 인피니티 풀</p>
+                    </div>
+                    <div class="facility-card text-center p-6">
+                        <div class="facility-icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <h3 class="text-lg font-bold korean-font mb-2">스파 & 웰니스</h3>
+                        <p class="text-sm text-gray-600 korean-font">전통 한국식 트리트먼트 제공</p>
+                    </div>
+                    <div class="facility-card text-center p-6">
+                        <div class="facility-icon">
+                            <i class="fas fa-anchor"></i>
+                        </div>
+                        <h3 class="text-lg font-bold korean-font mb-2">프라이빗 마리나</h3>
+                        <p class="text-sm text-gray-600 korean-font">요트 서비스 제공 전용 마리나</p>
+                    </div>
+                    <div class="facility-card text-center p-6">
+                        <div class="facility-icon">
+                            <i class="fas fa-helicopter"></i>
+                        </div>
+                        <h3 class="text-lg font-bold korean-font mb-2">헬리패드</h3>
+                        <p class="text-sm text-gray-600 korean-font">편리한 교통을 위한 프라이빗 헬리패드</p>
+                    </div>
+                    <div class="facility-card text-center p-6">
+                        <div class="facility-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h3 class="text-lg font-bold korean-font mb-2">파인 다이닝</h3>
+                        <p class="text-sm text-gray-600 korean-font">미슐랭 수준의 레스토랑</p>
+                    </div>
+                    <div class="facility-card text-center p-6">
+                        <div class="facility-icon">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <h3 class="text-lg font-bold korean-font mb-2">피트니스 센터</h3>
+                        <p class="text-sm text-gray-600 korean-font">개인 트레이너와 함께하는 피트니스</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 문의 섹션 -->
+        <section id="contact" class="section-padding bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="section-title text-white korean-font">문의하기</h2>
+                    <p class="section-subtitle text-gray-300 korean-font">
+                        보라카이 실버타운에 대한 궁금한 점이 있으시면 언제든 문의해주세요.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-2xl font-bold korean-font mb-6">연락처 정보</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-map-marker-alt text-yellow-400 text-xl w-8"></i>
+                                <span class="korean-font">Monaco Road, Sitio Tulubhan, Boracay, Malay, 5608 Aklan</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-envelope text-yellow-400 text-xl w-8"></i>
+                                <span class="korean-font">info@boracay-silvertown.com</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-yellow-400 text-xl w-8"></i>
+                                <span class="korean-font">+63-XX-XXXX-XXXX</span>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <button onclick="showInquiryModal()" class="btn-primary korean-font">
+                                <i class="fas fa-paper-plane mr-2"></i>문의하기
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold korean-font mb-6">뉴스레터 구독</h3>
+                        <p class="text-gray-300 korean-font mb-6">
+                            실버타운 개발 소식과 특별한 혜택을 가장 먼저 받아보세요.
+                        </p>
+                        <form id="newsletterForm" class="space-y-4">
+                            <input type="email" name="email" placeholder="이메일 주소" 
+                                   class="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-yellow-400 focus:outline-none">
+                            <input type="text" name="name" placeholder="성함" 
+                                   class="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-yellow-400 focus:outline-none">
+                            <button type="submit" class="w-full btn-primary korean-font">
+                                구독하기
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- 모달들 -->
         <!-- 로그인 모달 -->
         <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -159,6 +432,96 @@ app.get('/', async (c) => {
                 <p class="text-center text-gray-600 text-sm mt-4 korean-font">
                     계정이 없으신가요? <button onclick="hideLoginModal(); showRegisterModal();" class="text-yellow-600 hover:underline">회원가입</button>
                 </p>
+            </div>
+        </div>
+
+        <!-- 회원가입 모달 -->
+        <div id="registerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full max-h-90vh overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold korean-font">회원가입</h2>
+                    <button onclick="hideRegisterModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="registerForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">이메일</label>
+                        <input type="email" name="email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">성명</label>
+                        <input type="text" name="name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">연락처</label>
+                        <input type="tel" name="phone" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">생년월일</label>
+                        <input type="date" name="birth_date" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">비밀번호</label>
+                        <input type="password" name="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">비밀번호 확인</label>
+                        <input type="password" name="confirmPassword" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg korean-font">
+                        회원가입
+                    </button>
+                </form>
+                <p class="text-center text-gray-600 text-sm mt-4 korean-font">
+                    이미 계정이 있으신가요? <button onclick="hideRegisterModal(); showLoginModal();" class="text-yellow-600 hover:underline">로그인</button>
+                </p>
+            </div>
+        </div>
+
+        <!-- 문의 모달 -->
+        <div id="inquiryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full max-h-90vh overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold korean-font">문의하기</h2>
+                    <button onclick="hideInquiryModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="inquiryForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">성명</label>
+                        <input type="text" name="name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">이메일</label>
+                        <input type="email" name="email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">연락처</label>
+                        <input type="tel" name="phone" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">문의 분류</label>
+                        <select name="category" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500">
+                            <option value="general">일반 문의</option>
+                            <option value="membership">회원권 문의</option>
+                            <option value="facilities">시설 문의</option>
+                            <option value="investment">투자 문의</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">제목</label>
+                        <input type="text" name="subject" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 korean-font">문의내용</label>
+                        <textarea name="message" rows="4" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-yellow-500" required></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg korean-font">
+                        문의하기
+                    </button>
+                </form>
             </div>
         </div>
         
