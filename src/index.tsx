@@ -7,6 +7,245 @@ import { hashPassword, verifyPassword, generateJWT, extractToken, requireAuth, r
 
 const app = new Hono<{ Bindings: Bindings }>()
 
+// 유닛별 모달 생성 함수
+function generateUnitModals() {
+  return `
+    <!-- Studio Premium Modal -->
+    <div id="studio-modal" class="unit-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="english-font text-3xl font-bold text-yellow-400 mb-2">Studio Premium</h2>
+                    <p class="korean-font text-gray-300">45㎡ (13.6평) | 1.5억원</p>
+                </div>
+                <button onclick="closeModal('studio-modal')" class="text-white hover:text-yellow-400 text-3xl">&times;</button>
+            </div>
+            <div class="unit-gallery">
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/3288ae9a-13e7-48f7-ab58-8ae6365df62c', 'Studio Premium - 오션뷰 리빙')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/3288ae9a-13e7-48f7-ab58-8ae6365df62c" alt="Studio Ocean View">
+                    <div class="gallery-caption">
+                        <strong>오션뷰 리빙</strong><br>
+                        파노라믹 바다 전망의 럭셔리 스튜디오
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/1fb41c22-7522-43b7-9eea-59084e2e7dd4', 'Studio Premium - 베드룸 앵글')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/1fb41c22-7522-43b7-9eea-59084e2e7dd4" alt="Studio Bedroom">
+                    <div class="gallery-caption">
+                        <strong>베드룸 앵글</strong><br>
+                        프리미엄 침실 공간과 바다 전망
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/23256e8d-a449-4359-b918-5cc8affff15f', 'Studio Premium - 럭셔리 욕실')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/23256e8d-a449-4359-b918-5cc8affff15f" alt="Studio Bathroom">
+                    <div class="gallery-caption">
+                        <strong>럭셔리 욕실</strong><br>
+                        오션뷰 욕조와 프리미엄 마블 마감
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 text-gray-300 korean-font">
+                <h4 class="text-lg font-semibold text-yellow-400 mb-3">특징</h4>
+                <ul class="space-y-2">
+                    <li>• 컴팩트하지만 럭셔리한 스튜디오 공간</li>
+                    <li>• 전면 오션뷰 대형 창문</li>
+                    <li>• 프리미엄 인테리어와 빌트인 가구</li>
+                    <li>• 한국 전통 디자인 요소 적용</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- One Bedroom Modal -->
+    <div id="onebedroom-modal" class="unit-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="english-font text-3xl font-bold text-yellow-400 mb-2">One Bedroom Deluxe</h2>
+                    <p class="korean-font text-gray-300">65㎡ (19.7평) | 2.2억원</p>
+                </div>
+                <button onclick="closeModal('onebedroom-modal')" class="text-white hover:text-yellow-400 text-3xl">&times;</button>
+            </div>
+            <div class="unit-gallery">
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/264c7e3e-d6aa-49e7-afcd-48692d387074', 'One Bedroom Deluxe - 오션뷰 리빙')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/264c7e3e-d6aa-49e7-afcd-48692d387074" alt="One Bedroom Ocean View">
+                    <div class="gallery-caption">
+                        <strong>오션뷰 리빙</strong><br>
+                        파노라믹 바다 전망의 거실 공간
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/42b434dd-3f01-401b-9275-4df4396e7669', 'One Bedroom Deluxe - 마스터 베드룸')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/42b434dd-3f01-401b-9275-4df4396e7669" alt="One Bedroom Master Bedroom">
+                    <div class="gallery-caption">
+                        <strong>마스터 베드룸</strong><br>
+                        럭셔리 킹 베드와 선셋 오션뷰
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 text-gray-300 korean-font">
+                <h4 class="text-lg font-semibold text-yellow-400 mb-3">특징</h4>
+                <ul class="space-y-2">
+                    <li>• 분리된 침실과 넓은 거실 공간</li>
+                    <li>• 파노라믹 오션뷰</li>
+                    <li>• 프리미엄 어메니티 완비</li>
+                    <li>• 현대적 한국 디자인 감성</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two Bedroom Modal -->
+    <div id="twobedroom-modal" class="unit-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="english-font text-3xl font-bold text-yellow-400 mb-2">Two Bedroom Royal</h2>
+                    <p class="korean-font text-gray-300">85㎡ (25.7평) | 3.2억원</p>
+                </div>
+                <button onclick="closeModal('twobedroom-modal')" class="text-white hover:text-yellow-400 text-3xl">&times;</button>
+            </div>
+            <div class="unit-gallery">
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/6410d897-1554-4b29-8141-d0b047ae1afe', 'Two Bedroom Royal - 오션뷰 리빙')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/6410d897-1554-4b29-8141-d0b047ae1afe" alt="Two Bedroom Ocean View">
+                    <div class="gallery-caption">
+                        <strong>오션뷰 리빙</strong><br>
+                        로열 스위트 레벨의 거실 공간
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/37a887ae-2e19-4e8e-8cfd-6a9926d27b4e', 'Two Bedroom Royal - 로열 마스터룸')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/37a887ae-2e19-4e8e-8cfd-6a9926d27b4e" alt="Two Bedroom Royal Master">
+                    <div class="gallery-caption">
+                        <strong>로열 마스터룸</strong><br>
+                        한국 궁궐 스타일 헤드보드와 발코니
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 text-gray-300 korean-font">
+                <h4 class="text-lg font-semibold text-yellow-400 mb-3">특징</h4>
+                <ul class="space-y-2">
+                    <li>• 투룸 로열 스위트 구조</li>
+                    <li>• 파노라믹 오션뷰와 황금시간 조명</li>
+                    <li>• 한국 궁궐 스타일 디자인 요소</li>
+                    <li>• 프리미엄 마블과 골드 액센트</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Penthouse Modal -->
+    <div id="penthouse-modal" class="unit-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="english-font text-3xl font-bold text-yellow-400 mb-2">Penthouse Presidential</h2>
+                    <p class="korean-font text-gray-300">120㎡ (36.3평) | 5억원</p>
+                </div>
+                <button onclick="closeModal('penthouse-modal')" class="text-white hover:text-yellow-400 text-3xl">&times;</button>
+            </div>
+            <div class="unit-gallery">
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/4225d7a6-ae92-4111-9a37-116cada7e42c', 'Penthouse Presidential - 360도 오션뷰')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/4225d7a6-ae92-4111-9a37-116cada7e42c" alt="Penthouse Ocean View">
+                    <div class="gallery-caption">
+                        <strong>360도 오션뷰</strong><br>
+                        최고급 펜트하우스 프레지덴셜 스위트
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/81fa3a99-f937-4e2e-a9fc-24235d5d50f0', 'Penthouse Presidential - 프라이빗 테라스')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/81fa3a99-f937-4e2e-a9fc-24235d5d50f0" alt="Penthouse Terrace">
+                    <div class="gallery-caption">
+                        <strong>프라이빗 테라스</strong><br>
+                        360도 파노라믹뷰와 야외 다이닝
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 text-gray-300 korean-font">
+                <h4 class="text-lg font-semibold text-yellow-400 mb-3">특징</h4>
+                <ul class="space-y-2">
+                    <li>• 360도 파노라믹 오션뷰</li>
+                    <li>• 프라이빗 테라스와 헬리패드 직접 접근</li>
+                    <li>• 프레지덴셜 스위트 레벨 럭셔리</li>
+                    <li>• 한국 궁궐 디자인의 최고급 버전</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Helipad Modal -->
+    <div id="helipad-modal" class="unit-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="english-font text-3xl font-bold text-yellow-400 mb-2">Private Helipad</h2>
+                    <p class="korean-font text-gray-300">프라이빗 헬리패드</p>
+                </div>
+                <button onclick="closeModal('helipad-modal')" class="text-white hover:text-yellow-400 text-3xl">&times;</button>
+            </div>
+            <div class="mt-6 text-gray-300 korean-font">
+                <h4 class="text-lg font-semibold text-yellow-400 mb-3">특징</h4>
+                <ul class="space-y-2">
+                    <li>• 건물 최상층 프라이빗 헬리패드</li>
+                    <li>• 펜트하우스 거주자 전용 접근</li>
+                    <li>• 24시간 운항 서비스</li>
+                    <li>• 마닐라/세부 직항 연결</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Marina Modal -->
+    <div id="marina-modal" class="unit-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="english-font text-3xl font-bold text-yellow-400 mb-2">Private Marina</h2>
+                    <p class="korean-font text-gray-300">프라이빗 유럽형 마리나</p>
+                </div>
+                <button onclick="closeModal('marina-modal')" class="text-white hover:text-yellow-400 text-3xl">&times;</button>
+            </div>
+            <div class="mt-6 text-gray-300 korean-font">
+                <h4 class="text-lg font-semibold text-yellow-400 mb-3">특징</h4>
+                <ul class="space-y-2">
+                    <li>• 유럽형 프라이빗 선착장</li>
+                    <li>• 대형 요트 및 크루저 계류 가능</li>
+                    <li>• 24시간 보안 및 관리 서비스</li>
+                    <li>• 보라카이 해안 직접 접근</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lobby Modal -->
+    <div id="lobby-modal" class="unit-modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="english-font text-3xl font-bold text-yellow-400 mb-2">Grand Lobby</h2>
+                    <p class="korean-font text-gray-300">한국 궁궐 스타일 그랜드 로비</p>
+                </div>
+                <button onclick="closeModal('lobby-modal')" class="text-white hover:text-yellow-400 text-3xl">&times;</button>
+            </div>
+            <div class="unit-gallery">
+                <div class="gallery-item" onclick="expandImage('https://cdn1.genspark.ai/user-upload-image/4_generated/6e7eaa7b-c1ec-4c5c-b5e9-b4b94a26d7e6', 'Grand Lobby - 한국 궁궐 스타일')">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/6e7eaa7b-c1ec-4c5c-b5e9-b4b94a26d7e6" alt="Grand Lobby">
+                    <div class="gallery-caption">
+                        <strong>그랜드 로비</strong><br>
+                        포시즌스급 한국 궁궐 스타일 로비
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 text-gray-300 korean-font">
+                <h4 class="text-lg font-semibold text-yellow-400 mb-3">특징</h4>
+                <ul class="space-y-2">
+                    <li>• 한국 전통 궁궐 건축 양식</li>
+                    <li>• 프리미엄 마블과 골드 액센트</li>
+                    <li>• 크리스탈 샹들리에와 고급 인테리어</li>
+                    <li>• 24시간 컨시어지 서비스</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
 // CORS 설정
 app.use('/api/*', cors({
   origin: ['*'],
@@ -16,6 +255,310 @@ app.use('/api/*', cors({
 }))
 
 // 로컬 개발 환경에서는 정적 파일 서빙을 wrangler에 위임
+
+// 3D 투시도 페이지
+app.get('/perspective', async (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>3D 투시도 | Boracay Silvertown</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/style.css" rel="stylesheet">
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap');
+          
+          .korean-font { font-family: 'Noto Sans KR', sans-serif; }
+          .english-font { font-family: 'Playfair Display', serif; }
+          
+          .perspective-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+          }
+          
+          .aerial-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+          }
+          
+          .hotspot {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.9);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            animation: pulse 2s infinite;
+          }
+          
+          .hotspot:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
+          }
+          
+          .hotspot i {
+            color: white;
+            font-size: 16px;
+          }
+          
+          @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.9); }
+            100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+          }
+          
+          .unit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          .modal-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+          }
+          
+          .unit-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+          }
+          
+          .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+          }
+          
+          .gallery-item:hover {
+            transform: scale(1.05);
+          }
+          
+          .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+          }
+          
+          .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 15px;
+            font-size: 14px;
+          }
+          
+          .nav-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+          }
+          
+          .nav-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+          }
+          
+          .nav-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.8);
+          }
+          
+          .info-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            max-width: 300px;
+          }
+        </style>
+    </head>
+    <body class="bg-black">
+        <div class="perspective-container">
+            <!-- 야경 조감도 -->
+            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/39217760-90e6-45bd-9db2-21e12cbb0835" 
+                 alt="Boracay Silvertown Night View" class="aerial-image">
+            
+            <!-- 핫스팟들 -->
+            <!-- 헬리패드 -->
+            <div class="hotspot" style="top: 15%; left: 45%;" data-hotspot="helipad">
+                <i class="fas fa-helicopter"></i>
+            </div>
+            
+            <!-- Studio Premium (2층) -->
+            <div class="hotspot" style="top: 40%; left: 35%;" data-hotspot="studio">
+                <i class="fas fa-bed"></i>
+            </div>
+            
+            <!-- One Bedroom (3층) -->
+            <div class="hotspot" style="top: 35%; left: 50%;" data-hotspot="onebedroom">
+                <i class="fas fa-home"></i>
+            </div>
+            
+            <!-- Two Bedroom (3층) -->
+            <div class="hotspot" style="top: 35%; left: 65%;" data-hotspot="twobedroom">
+                <i class="fas fa-building"></i>
+            </div>
+            
+            <!-- Penthouse (4층) -->
+            <div class="hotspot" style="top: 25%; left: 55%;" data-hotspot="penthouse">
+                <i class="fas fa-crown"></i>
+            </div>
+            
+            <!-- 마리나 -->
+            <div class="hotspot" style="top: 75%; left: 30%;" data-hotspot="marina">
+                <i class="fas fa-anchor"></i>
+            </div>
+            
+            <!-- 로비 -->
+            <div class="hotspot" style="top: 50%; left: 45%;" data-hotspot="lobby">
+                <i class="fas fa-door-open"></i>
+            </div>
+        </div>
+        
+        <!-- 내비게이션 컨트롤 -->
+        <div class="nav-controls">
+            <button class="nav-btn" onclick="goHome()">
+                <i class="fas fa-home"></i> 홈으로
+            </button>
+            <button class="nav-btn" onclick="toggleFullscreen()">
+                <i class="fas fa-expand"></i> 전체화면
+            </button>
+        </div>
+        
+        <!-- 정보 패널 -->
+        <div class="info-panel">
+            <h3 class="english-font text-lg font-bold text-yellow-400 mb-2">Interactive 3D View</h3>
+            <p class="korean-font text-sm mb-2">황금색 포인트를 클릭하여 각 시설의 상세 투시도를 확인하세요.</p>
+            <div class="text-xs text-gray-300">
+                <i class="fas fa-mouse-pointer"></i> 클릭으로 탐험
+            </div>
+        </div>
+        
+        <!-- 모달들 -->
+        ${generateUnitModals()}
+        
+        <script>
+            // 핫스팟 클릭 이벤트
+            document.querySelectorAll('.hotspot').forEach(hotspot => {
+                hotspot.addEventListener('click', function() {
+                    const type = this.dataset.hotspot;
+                    showModal(type);
+                });
+            });
+            
+            // 모달 표시 함수
+            function showModal(type) {
+                const modal = document.getElementById(type + '-modal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+            
+            // 모달 닫기 함수
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+            
+            // ESC 키로 모달 닫기
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.unit-modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // 홈으로 이동
+            function goHome() {
+                window.location.href = '/';
+            }
+            
+            // 전체화면 토글
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+            
+            // 갤러리 이미지 클릭 시 확대
+            function expandImage(src, title) {
+                const expandModal = document.createElement('div');
+                expandModal.className = 'unit-modal';
+                expandModal.style.display = 'flex';
+                expandModal.innerHTML = \`
+                    <div class="modal-content" style="max-width: 95vw; max-height: 95vh; padding: 10px;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="english-font text-xl font-bold text-yellow-400">\${title}</h3>
+                            <button onclick="this.closest('.unit-modal').remove(); document.body.style.overflow='auto';" 
+                                    class="text-white hover:text-yellow-400 text-2xl">&times;</button>
+                        </div>
+                        <img src="\${src}" alt="\${title}" style="width: 100%; height: auto; border-radius: 10px;">
+                    </div>
+                \`;
+                document.body.appendChild(expandModal);
+                document.body.style.overflow = 'hidden';
+            }
+        </script>
+    </body>
+    </html>
+  `)
+})
 
 // 메인 페이지
 app.get('/', async (c) => {
@@ -110,6 +653,7 @@ app.get('/', async (c) => {
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-6">
                             <a href="#home" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">홈</a>
+                            <a href="/perspective" class="text-white hover:text-blue-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-blue-400">3D 투시도</a>
                             <a href="#about" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">소개</a>
                             <a href="#units" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">유닛타입</a>
                             <a href="#facilities" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">편의시설</a>
@@ -140,6 +684,9 @@ app.get('/', async (c) => {
                         보라카이에서 경험하는 세계 최고 수준의 시니어 라이프스타일
                     </p>
                     <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                        <a href="/perspective" class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 hover:from-blue-700 hover:via-purple-700 hover:to-blue-700 text-white px-10 py-5 rounded-full text-lg font-bold korean-font transition-all transform hover:scale-105 shadow-2xl border-2 border-blue-400 inline-block">
+                            <i class="fas fa-eye mr-3"></i>3D 투시도 탐험
+                        </a>
                         <button onclick="showRegisterModal()" class="bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 hover:from-amber-700 hover:via-yellow-600 hover:to-amber-700 text-black px-10 py-5 rounded-full text-lg font-bold korean-font transition-all transform hover:scale-105 shadow-2xl border-2 border-yellow-400">
                             <i class="fas fa-crown mr-3"></i>프리미엄 사전등록
                         </button>
