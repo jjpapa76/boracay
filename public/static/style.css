@@ -23,12 +23,32 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* 골드 그라디언트 텍스트 */
+/* 프리미엄 골드 그라디언트 텍스트 */
 .gold-gradient {
-  background: linear-gradient(135deg, #D4AF37, #FFD700, #B8860B);
+  background: linear-gradient(135deg, #C9A96E, #F4E4BC, #8B7B3A, #D4AF37);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
+}
+
+/* 프리미엄 그라디언트 배경 */
+.premium-gradient {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 25%, #1a1a1a 50%, #000000 100%);
+}
+
+/* 럭셔리 섀도우 */
+.luxury-shadow {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* 울트라 글래스 효과 */
+.ultra-glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* 히어로 배경 */
@@ -60,26 +80,44 @@ body {
   box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
-/* 버튼 스타일 */
+/* 프리미엄 버튼 스타일 */
 .btn-primary {
-  background: linear-gradient(135deg, #D4AF37, #FFD700);
-  border: none;
-  padding: 12px 32px;
+  background: linear-gradient(135deg, #C9A96E, #F4E4BC, #D4AF37);
+  border: 2px solid #F4E4BC;
+  padding: 16px 40px;
   border-radius: 50px;
-  color: white;
-  font-weight: 600;
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 1rem;
   text-decoration: none;
   display: inline-block;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #B8860B, #D4AF37);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
-  color: white;
+  background: linear-gradient(135deg, #F4E4BC, #C9A96E, #8B7B3A);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 35px rgba(212, 175, 55, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: #1a1a1a;
   text-decoration: none;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
 }
 
 .btn-secondary {
@@ -165,38 +203,63 @@ body {
   margin-right: auto;
 }
 
-/* 카드 스타일 */
+/* 프리미엄 카드 스타일 */
 .membership-card {
-  background: white;
-  border-radius: 20px;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-  border: 1px solid #f0f0f0;
-}
-
-.membership-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-}
-
-.membership-card.featured {
-  border: 3px solid #FFD700;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.07);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid transparent;
   position: relative;
 }
 
-.membership-card.featured::before {
-  content: 'RECOMMENDED';
+.membership-card::before {
+  content: '';
   position: absolute;
-  top: 20px;
-  right: -35px;
-  background: linear-gradient(135deg, #D4AF37, #FFD700);
-  color: white;
-  padding: 8px 40px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(135deg, #D4AF37, #F4E4BC, #C9A96E);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.membership-card:hover {
+  transform: translateY(-15px) scale(1.02);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2), 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.membership-card:hover::before {
+  opacity: 1;
+}
+
+.membership-card.featured {
+  border: 3px solid #F4E4BC;
+  position: relative;
+  background: linear-gradient(145deg, #fffef8, #fdfbf0);
+}
+
+.membership-card.featured::after {
+  content: 'MOST POPULAR';
+  position: absolute;
+  top: 24px;
+  right: -40px;
+  background: linear-gradient(135deg, #C9A96E, #F4E4BC, #D4AF37);
+  color: #1a1a1a;
+  padding: 10px 45px;
   transform: rotate(45deg);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* 시설 카드 */

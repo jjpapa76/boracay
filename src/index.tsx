@@ -36,7 +36,7 @@ app.get('/', async (c) => {
           .english-font { font-family: 'Playfair Display', serif; }
           
           .hero-bg {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://cdn1.genspark.ai/user-upload-image/4_generated/d6f34b0f-92ed-4633-b816-50dacee5176a');
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('https://cdn1.genspark.ai/user-upload-image/4_generated/2d32bd92-8f18-44bf-bfcb-58112f7196cb');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -50,10 +50,27 @@ app.get('/', async (c) => {
           }
           
           .gold-gradient {
-            background: linear-gradient(135deg, #D4AF37, #FFD700, #B8860B);
+            background: linear-gradient(135deg, #C9A96E, #F4E4BC, #8B7B3A, #D4AF37);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
+          }
+          
+          .premium-gradient {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 25%, #1a1a1a 50%, #000000 100%);
+          }
+          
+          .luxury-shadow {
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+          }
+          
+          .ultra-glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
           }
           
           .scroll-smooth {
@@ -81,26 +98,27 @@ app.get('/', async (c) => {
     </head>
     <body class="scroll-smooth">
         <!-- 네비게이션 -->
-        <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-80 backdrop-blur-md border-b border-gold-400">
+        <nav class="fixed top-0 w-full z-50 premium-gradient bg-opacity-95 backdrop-blur-lg border-b border-yellow-400 border-opacity-30">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
+                <div class="flex justify-between items-center h-20">
                     <div class="flex items-center">
-                        <h1 class="text-2xl font-bold text-white english-font">
-                            <span class="gold-gradient">Boracay</span> Silvertown
+                        <h1 class="text-2xl font-bold text-white english-font tracking-wide">
+                            <span class="gold-gradient">BORACAY</span>
+                            <span class="text-yellow-400 text-sm font-light ml-2">SILVERTOWN</span>
                         </h1>
                     </div>
                     <div class="hidden md:block">
-                        <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="#home" class="text-white hover:text-yellow-400 px-3 py-2 text-sm font-medium korean-font">홈</a>
-                            <a href="#about" class="text-white hover:text-yellow-400 px-3 py-2 text-sm font-medium korean-font">소개</a>
-                            <a href="#units" class="text-white hover:text-yellow-400 px-3 py-2 text-sm font-medium korean-font">유닛타입</a>
-                            <a href="#facilities" class="text-white hover:text-yellow-400 px-3 py-2 text-sm font-medium korean-font">편의시설</a>
-                            <a href="#contact" class="text-white hover:text-yellow-400 px-3 py-2 text-sm font-medium korean-font">문의</a>
-                            <button onclick="showLoginModal()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-medium korean-font transition-colors">로그인</button>
+                        <div class="ml-10 flex items-baseline space-x-6">
+                            <a href="#home" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">홈</a>
+                            <a href="#about" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">소개</a>
+                            <a href="#units" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">유닛타입</a>
+                            <a href="#facilities" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">편의시설</a>
+                            <a href="#contact" class="text-white hover:text-yellow-400 px-4 py-2 text-sm font-semibold korean-font transition-all duration-300 border-b-2 border-transparent hover:border-yellow-400">문의</a>
+                            <button onclick="showLoginModal()" class="bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-black px-6 py-2 rounded-lg text-sm font-bold korean-font transition-all duration-300 transform hover:scale-105 shadow-lg">프리미엄 로그인</button>
                         </div>
                     </div>
                     <div class="md:hidden">
-                        <button id="mobile-menu-button" class="text-white hover:text-yellow-400">
+                        <button id="mobile-menu-button" class="text-white hover:text-yellow-400 transition-colors">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
                     </div>
@@ -111,21 +129,22 @@ app.get('/', async (c) => {
         <!-- 히어로 섹션 -->
         <section id="home" class="hero-bg flex items-center justify-center">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
-                <div class="glass-effect rounded-3xl p-12 max-w-4xl mx-auto">
-                    <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 english-font">
-                        <span class="gold-gradient">Luxury</span> Living<br>
-                        <span class="korean-font text-3xl md:text-4xl">보라카이 프리미엄 실버타운</span>
+                <div class="ultra-glass rounded-3xl p-12 max-w-5xl mx-auto luxury-shadow">
+                    <h1 class="text-6xl md:text-8xl font-bold text-white mb-8 english-font leading-tight">
+                        <span class="gold-gradient">BORACAY</span><br>
+                        <span class="text-4xl md:text-5xl tracking-wider">SILVERTOWN</span><br>
+                        <span class="korean-font text-2xl md:text-3xl font-light tracking-wide opacity-90">세계 최고 수준의 프리미엄 시니어 레지던스</span>
                     </h1>
-                    <p class="text-xl md:text-2xl text-white mb-8 korean-font leading-relaxed">
-                        한국의 전통미와 현대적 럭셔리가 만나는<br>
-                        보라카이 최고급 시니어 리빙 커뮤니티
+                    <p class="text-xl md:text-2xl text-white mb-10 korean-font leading-relaxed opacity-95 max-w-3xl mx-auto">
+                        한국 왕실의 품격과 현대적 럭셔리의 완벽한 조화<br>
+                        보라카이에서 경험하는 세계 최고 수준의 시니어 라이프스타일
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button onclick="showRegisterModal()" class="bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-700 hover:to-yellow-600 text-white px-8 py-4 rounded-full text-lg font-semibold korean-font transition-all transform hover:scale-105 shadow-2xl">
-                            <i class="fas fa-star mr-2"></i>사전 회원 등록
+                    <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                        <button onclick="showRegisterModal()" class="bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 hover:from-amber-700 hover:via-yellow-600 hover:to-amber-700 text-black px-10 py-5 rounded-full text-lg font-bold korean-font transition-all transform hover:scale-105 shadow-2xl border-2 border-yellow-400">
+                            <i class="fas fa-crown mr-3"></i>프리미엄 사전등록
                         </button>
-                        <button onclick="showInquiryModal()" class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black px-8 py-4 rounded-full text-lg font-semibold korean-font transition-all">
-                            <i class="fas fa-phone mr-2"></i>상담 문의
+                        <button onclick="showInquiryModal()" class="bg-transparent border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black px-10 py-5 rounded-full text-lg font-bold korean-font transition-all transform hover:scale-105">
+                            <i class="fas fa-phone mr-3"></i>VIP 상담 문의
                         </button>
                     </div>
                 </div>
@@ -146,8 +165,8 @@ app.get('/', async (c) => {
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div class="animate-fade-in">
-                        <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/514969fc-f37b-45a8-89a8-92790460a622" 
-                             alt="한국 전통 로비" class="rounded-2xl shadow-2xl">
+                        <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/6b57e988-2803-422b-90dc-5bf202ec9a7a" 
+                             alt="하이엔드 한국 전통 로비" class="rounded-2xl shadow-2xl">
                     </div>
                     <div class="space-y-6">
                         <h3 class="text-3xl font-bold korean-font">한국의 아이덴티티가 살아있는 공간</h3>
@@ -187,7 +206,7 @@ app.get('/', async (c) => {
                                 <h3 class="text-xl font-bold korean-font mb-2">스튜디오 프리미엄</h3>
                                 <p class="text-gray-600 text-sm">Studio Premium</p>
                             </div>
-                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/30ef4aef-c900-46d4-83f0-237b9e5fb96f" 
+                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/adfc8ff3-ce2d-4072-a946-444d6d1c790b" 
                                  alt="스튜디오 프리미엄" class="w-full h-48 object-cover rounded-lg mb-4">
                             <div class="space-y-3">
                                 <div class="flex justify-between">
@@ -215,7 +234,7 @@ app.get('/', async (c) => {
                                 <h3 class="text-xl font-bold korean-font mb-2">원룸 디럭스</h3>
                                 <p class="text-gray-600 text-sm">One Bedroom Deluxe</p>
                             </div>
-                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/30ef4aef-c900-46d4-83f0-237b9e5fb96f" 
+                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/d5251051-028b-4fa9-8692-b8ea6268754c" 
                                  alt="원룸 디럭스" class="w-full h-48 object-cover rounded-lg mb-4">
                             <div class="space-y-3">
                                 <div class="flex justify-between">
@@ -243,7 +262,7 @@ app.get('/', async (c) => {
                                 <h3 class="text-xl font-bold korean-font mb-2">투룸 로열</h3>
                                 <p class="text-gray-600 text-sm">Two Bedroom Royal</p>
                             </div>
-                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/1dbd0308-6f67-4b16-96cc-c7430a7a7ec1" 
+                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/500e68f0-715b-4004-85b3-ebd5abaa1dfb" 
                                  alt="투룸 로열" class="w-full h-48 object-cover rounded-lg mb-4">
                             <div class="space-y-3">
                                 <div class="flex justify-between">
@@ -271,7 +290,7 @@ app.get('/', async (c) => {
                                 <h3 class="text-xl font-bold korean-font mb-2">펜트하우스 프레지덴셜</h3>
                                 <p class="text-gray-600 text-sm">Penthouse Presidential</p>
                             </div>
-                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/c6658e1d-2443-4062-86da-235b4f80cca9" 
+                            <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/2460e2a2-2ef3-4892-85dc-ce380b7947c1" 
                                  alt="펜트하우스 프레지덴셜" class="w-full h-48 object-cover rounded-lg mb-4">
                             <div class="space-y-3">
                                 <div class="flex justify-between">
@@ -305,8 +324,8 @@ app.get('/', async (c) => {
                     </p>
                 </div>
                 <div class="mb-12">
-                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/2e27d37d-447e-4c28-ac84-c5cfd30f104a" 
-                         alt="편의시설" class="w-full rounded-2xl shadow-2xl">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/4_generated/8bec460f-13f9-4eb2-946d-4edb04b7b651" 
+                         alt="하이엔드 편의시설" class="w-full rounded-2xl shadow-2xl">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="facility-card text-center p-6">
