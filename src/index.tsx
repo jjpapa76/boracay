@@ -560,6 +560,434 @@ app.get('/perspective', async (c) => {
   `)
 })
 
+// 관리자 대시보드
+app.get('/admin', requireAdmin, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+
+  // 통계 데이터 조회
+  const stats = await Promise.all([
+    db.execute('SELECT COUNT(*) as count FROM members', []),
+    db.execute('SELECT COUNT(*) as count FROM pre_purchase_applications', []),
+    db.execute('SELECT COUNT(*) as count FROM inquiries WHERE status = ?', ['pending']),
+    db.execute('SELECT COUNT(*) as count FROM newsletter_subscriptions', [])
+  ]);
+
+  const memberCount = stats[0].results[0].count;
+  const applicationCount = stats[1].results[0].count;
+  const pendingInquiries = stats[2].results[0].count;
+  const newsletterCount = stats[3].results[0].count;
+
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>관리자 패널 | Boracay Silvertown</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/style.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap');
+          
+          .korean-font { font-family: 'Noto Sans KR', sans-serif; }
+          .english-font { font-family: 'Playfair Display', serif; }
+          
+          .admin-sidebar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-right: 1px solid rgba(255, 215, 0, 0.2);
+          }
+          
+          .admin-content {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+          }
+          
+          .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+          
+          .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+          }
+          
+          .stat-card.members { border-left-color: #3b82f6; }
+          .stat-card.applications { border-left-color: #10b981; }
+          .stat-card.inquiries { border-left-color: #f59e0b; }
+          .stat-card.newsletter { border-left-color: #8b5cf6; }
+          
+          .nav-item {
+            padding: 15px 20px;
+            margin: 5px 15px;
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+          }
+          
+          .nav-item:hover, .nav-item.active {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            transform: translateX(5px);
+          }
+          
+          .data-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+          }
+          
+          .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+          }
+          
+          .action-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+          }
+          
+          .btn-approve { background: #10b981; color: white; }
+          .btn-approve:hover { background: #059669; transform: scale(1.05); }
+          
+          .btn-reject { background: #ef4444; color: white; }
+          .btn-reject:hover { background: #dc2626; transform: scale(1.05); }
+          
+          .btn-view { background: #3b82f6; color: white; }
+          .btn-view:hover { background: #2563eb; transform: scale(1.05); }
+        </style>
+    </head>
+    <body class="bg-gray-100">
+        <div class="flex h-screen">
+            <!-- 사이드바 -->
+            <div class="admin-sidebar w-64 flex-shrink-0">
+                <div class="p-6 border-b border-yellow-400 border-opacity-30">
+                    <h2 class="text-2xl font-bold text-white english-font">
+                        <span class="gold-gradient">ADMIN</span><br>
+                        <span class="text-sm korean-font text-yellow-400">관리자 패널</span>
+                    </h2>
+                </div>
+                <nav class="mt-6">
+                    <div class="nav-item active" onclick="showSection('dashboard')">
+                        <i class="fas fa-chart-pie mr-3"></i>
+                        <span class="korean-font">대시보드</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('members')">
+                        <i class="fas fa-users mr-3"></i>
+                        <span class="korean-font">회원 관리</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('applications')">
+                        <i class="fas fa-file-contract mr-3"></i>
+                        <span class="korean-font">사전구매 신청</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('inquiries')">
+                        <i class="fas fa-question-circle mr-3"></i>
+                        <span class="korean-font">문의사항</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('newsletter')">
+                        <i class="fas fa-envelope mr-3"></i>
+                        <span class="korean-font">뉴스레터</span>
+                    </div>
+                    <div class="nav-item mt-10" onclick="window.location.href='/'">
+                        <i class="fas fa-home mr-3"></i>
+                        <span class="korean-font">홈페이지</span>
+                    </div>
+                    <div class="nav-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt mr-3"></i>
+                        <span class="korean-font">로그아웃</span>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- 메인 컨텐츠 -->
+            <div class="admin-content flex-1 overflow-auto">
+                <!-- 대시보드 섹션 -->
+                <div id="dashboard-section" class="section">
+                    <div class="p-8">
+                        <div class="mb-8">
+                            <h1 class="text-3xl font-bold korean-font text-gray-800 mb-2">관리자 대시보드</h1>
+                            <p class="text-gray-600 korean-font">보라카이 실버타운 관리 현황</p>
+                        </div>
+
+                        <!-- 통계 카드 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div class="stat-card members">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600 korean-font">총 회원수</p>
+                                        <p class="text-3xl font-bold text-blue-600">${memberCount}</p>
+                                    </div>
+                                    <i class="fas fa-users text-4xl text-blue-300"></i>
+                                </div>
+                                <p class="text-xs text-gray-500 korean-font mt-2">등록된 사전회원</p>
+                            </div>
+
+                            <div class="stat-card applications">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600 korean-font">사전구매 신청</p>
+                                        <p class="text-3xl font-bold text-green-600">${applicationCount}</p>
+                                    </div>
+                                    <i class="fas fa-file-contract text-4xl text-green-300"></i>
+                                </div>
+                                <p class="text-xs text-gray-500 korean-font mt-2">접수된 신청서</p>
+                            </div>
+
+                            <div class="stat-card inquiries">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600 korean-font">대기 문의</p>
+                                        <p class="text-3xl font-bold text-yellow-600">${pendingInquiries}</p>
+                                    </div>
+                                    <i class="fas fa-question-circle text-4xl text-yellow-300"></i>
+                                </div>
+                                <p class="text-xs text-gray-500 korean-font mt-2">답변 대기중</p>
+                            </div>
+
+                            <div class="stat-card newsletter">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600 korean-font">뉴스레터 구독</p>
+                                        <p class="text-3xl font-bold text-purple-600">${newsletterCount}</p>
+                                    </div>
+                                    <i class="fas fa-envelope text-4xl text-purple-300"></i>
+                                </div>
+                                <p class="text-xs text-gray-500 korean-font mt-2">구독자 수</p>
+                            </div>
+                        </div>
+
+                        <!-- 차트 영역 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="data-table">
+                                <div class="table-header">
+                                    <h3 class="text-xl font-bold korean-font">회원 가입 추이</h3>
+                                </div>
+                                <div class="p-6">
+                                    <canvas id="memberChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="data-table">
+                                <div class="table-header">
+                                    <h3 class="text-xl font-bold korean-font">유닛별 신청 현황</h3>
+                                </div>
+                                <div class="p-6">
+                                    <canvas id="unitChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 회원 관리 섹션 -->
+                <div id="members-section" class="section hidden">
+                    <div class="p-8">
+                        <div class="mb-6">
+                            <h1 class="text-3xl font-bold korean-font text-gray-800">회원 관리</h1>
+                        </div>
+                        <div id="members-table" class="data-table">
+                            <div class="table-header">
+                                <h3 class="text-xl font-bold korean-font">등록 회원 목록</h3>
+                            </div>
+                            <div class="p-4">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider korean-font">이름</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider korean-font">이메일</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider korean-font">가입일</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider korean-font">상태</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider korean-font">관리</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="members-tbody" class="bg-white divide-y divide-gray-200">
+                                            <!-- 동적으로 로드 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 다른 섹션들도 비슷하게 구현 -->
+                <div id="applications-section" class="section hidden">
+                    <div class="p-8">
+                        <h1 class="text-3xl font-bold korean-font text-gray-800">사전구매 신청 관리</h1>
+                        <div id="applications-content">
+                            <!-- 사전구매 신청 관리 내용 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="inquiries-section" class="section hidden">
+                    <div class="p-8">
+                        <h1 class="text-3xl font-bold korean-font text-gray-800">문의사항 관리</h1>
+                        <div id="inquiries-content">
+                            <!-- 문의사항 관리 내용 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="newsletter-section" class="section hidden">
+                    <div class="p-8">
+                        <h1 class="text-3xl font-bold korean-font text-gray-800">뉴스레터 관리</h1>
+                        <div id="newsletter-content">
+                            <!-- 뉴스레터 관리 내용 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 섹션 전환 함수
+            function showSection(sectionName) {
+                // 모든 섹션 숨기기
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                
+                // 모든 네비게이션 아이템에서 active 제거
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 선택된 섹션 보이기
+                document.getElementById(sectionName + '-section').classList.remove('hidden');
+                
+                // 선택된 네비게이션 아이템에 active 추가
+                event.target.classList.add('active');
+                
+                // 섹션별 데이터 로드
+                if (sectionName === 'members') {
+                    loadMembers();
+                } else if (sectionName === 'dashboard') {
+                    initCharts();
+                }
+            }
+
+            // 차트 초기화
+            function initCharts() {
+                // 회원 가입 추이 차트
+                const memberCtx = document.getElementById('memberChart');
+                if (memberCtx) {
+                    new Chart(memberCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+                            datasets: [{
+                                label: '신규 회원',
+                                data: [5, 12, 8, 15, 22, 18],
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '월별 신규 회원 가입'
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 유닛별 신청 현황 차트
+                const unitCtx = document.getElementById('unitChart');
+                if (unitCtx) {
+                    new Chart(unitCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Studio Premium', 'One Bedroom', 'Two Bedroom', 'Penthouse'],
+                            datasets: [{
+                                data: [30, 45, 20, 5],
+                                backgroundColor: [
+                                    '#3b82f6',
+                                    '#10b981',
+                                    '#f59e0b',
+                                    '#8b5cf6'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '유닛별 사전구매 신청'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // 회원 목록 로드
+            async function loadMembers() {
+                try {
+                    const response = await fetch('/api/admin/members', {
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('token')
+                        }
+                    });
+                    const data = await response.json();
+                    
+                    const tbody = document.getElementById('members-tbody');
+                    tbody.innerHTML = data.members.map(member => \`
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">\${member.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">\${member.email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">\${new Date(member.created_at).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">활성</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <button class="action-btn btn-view" onclick="viewMember(\${member.id})">상세</button>
+                                <button class="action-btn btn-reject" onclick="deleteMember(\${member.id})">삭제</button>
+                            </td>
+                        </tr>
+                    \`).join('');
+                } catch (error) {
+                    console.error('회원 목록 로드 실패:', error);
+                }
+            }
+
+            // 로그아웃
+            function logout() {
+                localStorage.removeItem('token');
+                window.location.href = '/';
+            }
+
+            // 페이지 로드 시 차트 초기화
+            document.addEventListener('DOMContentLoaded', function() {
+                initCharts();
+            });
+        </script>
+    </body>
+    </html>
+  `)
+})
+
 // 메인 페이지
 app.get('/', async (c) => {
   return c.html(`
@@ -1340,5 +1768,501 @@ app.post('/api/newsletter/subscribe', async (c) => {
     return c.json({ error: '서버 오류가 발생했습니다.' }, 500)
   }
 })
+
+// 관리자 API 엔드포인트들
+app.get('/api/admin/members', requireAdmin, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  
+  try {
+    const result = await db.execute(
+      'SELECT id, name, email, phone, created_at FROM members ORDER BY created_at DESC LIMIT 100',
+      []
+    );
+    
+    return c.json({ members: result.results });
+  } catch (error) {
+    console.error('회원 목록 조회 실패:', error);
+    return c.json({ error: '회원 목록을 불러올 수 없습니다.' }, 500);
+  }
+});
+
+app.get('/api/admin/applications', requireAdmin, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  
+  try {
+    const result = await db.execute(`
+      SELECT 
+        pa.id, pa.member_id, pa.membership_type_id, pa.floor_preference, 
+        pa.direction_preference, pa.payment_method, pa.status, pa.created_at,
+        m.name as member_name, m.email as member_email,
+        mt.name as membership_type_name, mt.price
+      FROM pre_purchase_applications pa
+      JOIN members m ON pa.member_id = m.id
+      JOIN membership_types mt ON pa.membership_type_id = mt.id
+      ORDER BY pa.created_at DESC
+      LIMIT 100
+    `, []);
+    
+    return c.json({ applications: result.results });
+  } catch (error) {
+    console.error('신청 목록 조회 실패:', error);
+    return c.json({ error: '신청 목록을 불러올 수 없습니다.' }, 500);
+  }
+});
+
+app.get('/api/admin/inquiries', requireAdmin, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  
+  try {
+    const result = await db.execute(
+      'SELECT id, name, email, category, subject, message, status, created_at FROM inquiries ORDER BY created_at DESC LIMIT 100',
+      []
+    );
+    
+    return c.json({ inquiries: result.results });
+  } catch (error) {
+    console.error('문의 목록 조회 실패:', error);
+    return c.json({ error: '문의 목록을 불러올 수 없습니다.' }, 500);
+  }
+});
+
+app.put('/api/admin/applications/:id/approve', requireAdmin, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  const applicationId = c.req.param('id');
+  
+  try {
+    await db.execute(
+      'UPDATE pre_purchase_applications SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      ['approved', applicationId]
+    );
+    
+    return c.json({ success: true, message: '신청이 승인되었습니다.' });
+  } catch (error) {
+    console.error('신청 승인 실패:', error);
+    return c.json({ error: '신청 승인에 실패했습니다.' }, 500);
+  }
+});
+
+app.put('/api/admin/applications/:id/reject', requireAdmin, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  const applicationId = c.req.param('id');
+  
+  try {
+    await db.execute(
+      'UPDATE pre_purchase_applications SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      ['rejected', applicationId]
+    );
+    
+    return c.json({ success: true, message: '신청이 거절되었습니다.' });
+  } catch (error) {
+    console.error('신청 거절 실패:', error);
+    return c.json({ error: '신청 거절에 실패했습니다.' }, 500);
+  }
+});
+
+app.put('/api/admin/inquiries/:id/respond', requireAdmin, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  const inquiryId = c.req.param('id');
+  const { response } = await c.req.json();
+  
+  try {
+    await db.execute(
+      'UPDATE inquiries SET admin_response = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [response, 'answered', inquiryId]
+    );
+    
+    return c.json({ success: true, message: '답변이 등록되었습니다.' });
+  } catch (error) {
+    console.error('답변 등록 실패:', error);
+    return c.json({ error: '답변 등록에 실패했습니다.' }, 500);
+  }
+});
+
+app.delete('/api/admin/members/:id', requireAdmin, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  const memberId = c.req.param('id');
+  
+  try {
+    await db.execute('DELETE FROM members WHERE id = ?', [memberId]);
+    return c.json({ success: true, message: '회원이 삭제되었습니다.' });
+  } catch (error) {
+    console.error('회원 삭제 실패:', error);
+    return c.json({ error: '회원 삭제에 실패했습니다.' }, 500);
+  }
+});
+
+// 결제 시스템 API
+app.post('/api/payment/create-intent', requireAuth, async (c) => {
+  const { env } = c;
+  const { amount, membershipTypeId, currency = 'usd' } = await c.req.json();
+  
+  try {
+    // Stripe Payment Intent 생성 (실제 환경에서는 Stripe 라이브러리 사용 권장)
+    const paymentIntentData = {
+      amount: amount * 100, // cents로 변환
+      currency: currency,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      metadata: {
+        membership_type_id: membershipTypeId.toString(),
+        user_id: c.get('userId').toString()
+      }
+    };
+
+    // 실제 환경에서는 env.STRIPE_SECRET_KEY 사용
+    // 데모용으로 모의 응답 반환
+    const mockPaymentIntent = {
+      id: 'pi_mock_' + Date.now(),
+      client_secret: 'pi_mock_' + Date.now() + '_secret',
+      status: 'requires_payment_method'
+    };
+    
+    return c.json({
+      clientSecret: mockPaymentIntent.client_secret,
+      paymentIntentId: mockPaymentIntent.id
+    });
+  } catch (error) {
+    console.error('결제 인텐트 생성 실패:', error);
+    return c.json({ error: '결제 준비 중 오류가 발생했습니다.' }, 500);
+  }
+});
+
+app.post('/api/payment/confirm', requireAuth, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  const { paymentIntentId, membershipTypeId, floorPreference, directionPreference } = await c.req.json();
+  const userId = c.get('userId');
+  
+  try {
+    // 실제 환경에서는 Stripe API로 결제 상태 확인
+    // 데모용으로 결제 성공으로 가정
+    const paymentSuccess = true;
+    
+    if (paymentSuccess) {
+      // 결제 성공 시 사전구매 신청 상태를 'paid'로 저장
+      await db.execute(`
+        INSERT INTO pre_purchase_applications 
+        (member_id, membership_type_id, floor_preference, direction_preference, payment_method, status, payment_intent_id, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `, [userId, membershipTypeId, floorPreference, directionPreference, 'stripe', 'paid', paymentIntentId]);
+      
+      // 결제 로그 기록
+      await db.execute(`
+        INSERT INTO activity_logs (member_id, action, details, created_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+      `, [userId, 'payment_completed', `회원권 사전구매 결제 완료: ${paymentIntentId}`]);
+      
+      return c.json({ 
+        success: true, 
+        message: '결제가 완료되었습니다. 사전구매 신청이 접수되었습니다.' 
+      });
+    } else {
+      return c.json({ 
+        error: '결제가 완료되지 않았습니다.',
+        status: 'failed'
+      }, 400);
+    }
+  } catch (error) {
+    console.error('결제 확인 실패:', error);
+    return c.json({ error: '결제 확인 중 오류가 발생했습니다.' }, 500);
+  }
+});
+
+// 결제 페이지
+app.get('/payment/:membershipTypeId', requireAuth, async (c) => {
+  const { env } = c;
+  const db = new DatabaseService(env.DB);
+  const membershipTypeId = c.req.param('membershipTypeId');
+  
+  try {
+    // 회원권 정보 조회
+    const membershipResult = await db.execute(
+      'SELECT * FROM membership_types WHERE id = ?', 
+      [membershipTypeId]
+    );
+    
+    if (membershipResult.results.length === 0) {
+      return c.text('회원권 정보를 찾을 수 없습니다.', 404);
+    }
+    
+    const membership = membershipResult.results[0];
+    
+    return c.html(`
+      <!DOCTYPE html>
+      <html lang="ko">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>결제하기 | Boracay Silvertown</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+          <link href="/static/style.css" rel="stylesheet">
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap');
+            
+            .korean-font { font-family: 'Noto Sans KR', sans-serif; }
+            .english-font { font-family: 'Playfair Display', serif; }
+            
+            .payment-container {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              min-height: 100vh;
+              padding: 2rem 0;
+            }
+            
+            .payment-card {
+              background: white;
+              border-radius: 20px;
+              padding: 40px;
+              box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+              max-width: 600px;
+              margin: 0 auto;
+            }
+            
+            .membership-summary {
+              background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+              border-radius: 15px;
+              padding: 25px;
+              margin-bottom: 30px;
+              border-left: 5px solid #ffd700;
+            }
+            
+            .payment-form {
+              background: #f8f9fa;
+              border-radius: 15px;
+              padding: 25px;
+            }
+            
+            .form-group {
+              margin-bottom: 20px;
+            }
+            
+            .form-label {
+              display: block;
+              font-weight: 600;
+              color: #374151;
+              margin-bottom: 8px;
+            }
+            
+            .form-select, .form-input {
+              width: 100%;
+              padding: 12px 15px;
+              border: 2px solid #e5e7eb;
+              border-radius: 10px;
+              background: white;
+              font-size: 16px;
+              transition: border-color 0.3s ease;
+            }
+            
+            .form-select:focus, .form-input:focus {
+              outline: none;
+              border-color: #667eea;
+            }
+            
+            .pay-button {
+              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+              color: white;
+              padding: 15px 30px;
+              border-radius: 30px;
+              border: none;
+              font-weight: bold;
+              font-size: 18px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              width: 100%;
+            }
+            
+            .pay-button:hover:not(:disabled) {
+              transform: translateY(-2px);
+              box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            }
+            
+            .pay-button:disabled {
+              opacity: 0.6;
+              cursor: not-allowed;
+            }
+          </style>
+      </head>
+      <body>
+          <div class="payment-container">
+              <div class="container mx-auto px-4">
+                  <div class="payment-card">
+                      <div class="text-center mb-8">
+                          <h1 class="text-3xl font-bold korean-font text-gray-800 mb-2">결제하기</h1>
+                          <p class="text-gray-600 korean-font">보라카이 실버타운 사전구매</p>
+                      </div>
+                      
+                      <!-- 회원권 요약 -->
+                      <div class="membership-summary">
+                          <div class="flex justify-between items-start mb-4">
+                              <div>
+                                  <h3 class="text-xl font-bold korean-font text-gray-800">${membership.name}</h3>
+                                  <p class="text-gray-600 korean-font">${membership.size}㎡ (${(membership.size / 3.3).toFixed(1)}평)</p>
+                              </div>
+                              <div class="text-right">
+                                  <p class="text-2xl font-bold text-green-600">$${membership.price.toLocaleString()}</p>
+                                  <p class="text-sm text-gray-500 korean-font">USD</p>
+                              </div>
+                          </div>
+                          <div class="text-sm text-gray-600 korean-font">
+                              <p>${membership.description}</p>
+                          </div>
+                      </div>
+                      
+                      <!-- 옵션 선택 -->
+                      <div class="mb-6">
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div class="form-group">
+                                  <label class="form-label korean-font">선호 층수</label>
+                                  <select id="floor-preference" class="form-select korean-font">
+                                      <option value="">선택해주세요</option>
+                                      <option value="2">2층</option>
+                                      <option value="3">3층</option>
+                                      <option value="4">4층 (최상층)</option>
+                                  </select>
+                              </div>
+                              <div class="form-group">
+                                  <label class="form-label korean-font">선호 방향</label>
+                                  <select id="direction-preference" class="form-select korean-font">
+                                      <option value="">선택해주세요</option>
+                                      <option value="ocean_view">오션뷰</option>
+                                      <option value="garden_view">가든뷰</option>
+                                      <option value="mountain_view">마운틴뷰</option>
+                                  </select>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- 결제 폼 (데모용) -->
+                      <div class="payment-form">
+                          <h3 class="text-lg font-bold korean-font text-gray-800 mb-4">결제 정보</h3>
+                          <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                              <div class="flex">
+                                  <div class="flex-shrink-0">
+                                      <i class="fas fa-info-circle text-yellow-400"></i>
+                                  </div>
+                                  <div class="ml-3">
+                                      <p class="text-sm text-yellow-700 korean-font">
+                                          <strong>데모 버전:</strong> 실제 결제는 이루어지지 않습니다. 
+                                          Stripe 연동은 실제 서비스 시 활성화됩니다.
+                                      </p>
+                                  </div>
+                              </div>
+                          </div>
+                          <form id="payment-form">
+                              <div class="form-group">
+                                  <label class="form-label korean-font">카드 번호 (데모용)</label>
+                                  <input type="text" class="form-input" placeholder="4242 4242 4242 4242" readonly>
+                              </div>
+                              
+                              <div class="grid grid-cols-2 gap-4">
+                                  <div class="form-group">
+                                      <label class="form-label korean-font">만료일</label>
+                                      <input type="text" class="form-input" placeholder="12/25" readonly>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="form-label korean-font">CVC</label>
+                                      <input type="text" class="form-input" placeholder="123" readonly>
+                                  </div>
+                              </div>
+                              
+                              <button type="submit" id="submit" class="pay-button korean-font">
+                                  <span id="button-text">$${membership.price.toLocaleString()} 결제하기 (데모)</span>
+                                  <span id="spinner" class="hidden">
+                                      <i class="fas fa-spinner fa-spin mr-2"></i>처리중...
+                                  </span>
+                              </button>
+                          </form>
+                      </div>
+                      
+                      <!-- 보안 정보 -->
+                      <div class="mt-6 text-center">
+                          <div class="flex items-center justify-center space-x-4 text-sm text-gray-500">
+                              <div class="flex items-center">
+                                  <i class="fas fa-lock mr-1"></i>
+                                  <span class="korean-font">SSL 보안</span>
+                              </div>
+                              <div class="flex items-center">
+                                  <i class="fab fa-cc-stripe mr-1"></i>
+                                  <span>Stripe</span>
+                              </div>
+                              <div class="flex items-center">
+                                  <i class="fas fa-shield-alt mr-1"></i>
+                                  <span class="korean-font">안전 결제</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <script>
+              // 데모용 결제 폼 제출
+              const form = document.getElementById('payment-form');
+              form.addEventListener('submit', async (event) => {
+                  event.preventDefault();
+                  
+                  const submitButton = document.getElementById('submit');
+                  const buttonText = document.getElementById('button-text');
+                  const spinner = document.getElementById('spinner');
+                  
+                  // 버튼 상태 변경
+                  submitButton.disabled = true;
+                  buttonText.classList.add('hidden');
+                  spinner.classList.remove('hidden');
+                  
+                  try {
+                      // 데모용 지연
+                      await new Promise(resolve => setTimeout(resolve, 2000));
+                      
+                      // 결제 확인 API 호출
+                      const confirmResponse = await fetch('/api/payment/confirm', {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': 'Bearer ' + localStorage.getItem('token')
+                          },
+                          body: JSON.stringify({
+                              paymentIntentId: 'demo_payment_' + Date.now(),
+                              membershipTypeId: ${membershipTypeId},
+                              floorPreference: document.getElementById('floor-preference').value,
+                              directionPreference: document.getElementById('direction-preference').value
+                          })
+                      });
+                      
+                      const confirmResult = await confirmResponse.json();
+                      
+                      if (confirmResult.success) {
+                          alert('결제가 완료되었습니다! 사전구매 신청이 접수되었습니다.');
+                          window.location.href = '/';
+                      } else {
+                          alert('결제 처리 중 문제가 발생했습니다.');
+                      }
+                  } catch (error) {
+                      console.error('결제 에러:', error);
+                      alert('결제 중 오류가 발생했습니다.');
+                  } finally {
+                      // 버튼 상태 복원
+                      submitButton.disabled = false;
+                      buttonText.classList.remove('hidden');
+                      spinner.classList.add('hidden');
+                  }
+              });
+          </script>
+      </body>
+      </html>
+    `);
+  } catch (error) {
+    console.error('결제 페이지 로드 실패:', error);
+    return c.text('페이지를 불러올 수 없습니다.', 500);
+  }
+});
 
 export default app
